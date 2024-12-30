@@ -26,13 +26,13 @@ public class AiGetByIdResDTOV1 {
     @AllArgsConstructor
     public static class Ai {
 
-        private Long aiId;
+        private Long id;
         private String question;
         private String answer;
 
         public static Ai from(AiEntity aiEntity) {
             return Ai.builder()
-                    .aiId(aiEntity.getId())
+                    .id(aiEntity.getId())
                     .question(aiEntity.getQuestion())
                     .answer(aiEntity.getAnswer())
                     .build();
