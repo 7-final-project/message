@@ -5,6 +5,7 @@ import com.qring.message.application.v1.res.AiGetByIdResDTOV1;
 import com.qring.message.application.v1.res.AiPostResDTOV1;
 import com.qring.message.application.v1.res.AiSearchResDTOV1;
 import com.qring.message.domain.model.AiEntity;
+import com.qring.message.infrastructure.docs.AiControllerSwagger;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -18,7 +19,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/v1/ais")
-public class AiControllerV1 {
+public class AiControllerV1 implements AiControllerSwagger {
 
     @PostMapping
     public ResponseEntity<ResDTO<AiPostResDTOV1>> postBy() {
