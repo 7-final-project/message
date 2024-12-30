@@ -94,4 +94,16 @@ public class AiControllerV1 {
                 HttpStatus.OK
         );
     }
+
+    @DeleteMapping("/{aiId}")
+    public ResponseEntity<ResDTO<Object>> deleteBy(@PathVariable Long aiId) {
+
+        return new ResponseEntity<>(
+                ResDTO.builder()
+                        .code(HttpStatus.OK.value())
+                        .message("AI 삭제에 성공했습니다.")
+                        .build(),
+                HttpStatus.OK
+        );
+    }
 }
