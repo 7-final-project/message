@@ -1,6 +1,6 @@
 package com.qring.message.application.v1.res;
 
-import com.qring.message.domain.model.MessageEntity;
+import com.qring.message.domain.model.AiEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,13 +10,13 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MessagePostResDTOV1 {
+public class AiPostResDTOV1 {
 
-    private Message message;
+    private Ai ai;
 
-    public static MessagePostResDTOV1 of(MessageEntity messageEntity) {
-        return MessagePostResDTOV1.builder()
-                .message(Message.from(messageEntity))
+    public static AiPostResDTOV1 of(AiEntity aiEntity) {
+        return AiPostResDTOV1.builder()
+                .ai(Ai.from(aiEntity))
                 .build();
     }
 
@@ -24,17 +24,17 @@ public class MessagePostResDTOV1 {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class Message {
+    public static class Ai {
 
-        private Long id;
-        private Long userId;
-        private String content;
+        private Long aiId;
+        private String question;
+        private String answer;
 
-        public static Message from(MessageEntity messageEntity) {
-            return Message.builder()
-                    .id(messageEntity.getId())
-                    .userId(messageEntity.getUserId())
-                    .content(messageEntity.getContent())
+        public static Ai from(AiEntity aiEntity) {
+            return Ai.builder()
+                    .aiId(aiEntity.getId())
+                    .question(aiEntity.getQuestion())
+                    .answer(aiEntity.getAnswer())
                     .build();
         }
     }
