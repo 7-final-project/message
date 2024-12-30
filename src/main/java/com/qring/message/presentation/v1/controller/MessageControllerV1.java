@@ -109,5 +109,16 @@ public class MessageControllerV1 {
                 HttpStatus.OK
         );
     }
+    @DeleteMapping("/{slackId}")
+    public ResponseEntity<ResDTO<Object>> deleteBy(@RequestHeader("X-User-Id") Long userId,
+                                                   @PathVariable Long slackId) {
 
+        return new ResponseEntity<>(
+                ResDTO.builder()
+                        .code(HttpStatus.OK.value())
+                        .message("메시지 삭제에 성공했습니다.")
+                        .build(),
+                HttpStatus.OK
+        );
+    }
 }
