@@ -46,8 +46,8 @@ public interface MessageControllerSwagger {
             @ApiResponse(responseCode = "200", description = "메시지 조회 성공", content = @Content(schema = @Schema(implementation = ResDTO.class))),
             @ApiResponse(responseCode = "400", description = "메시지 조회 실패.", content = @Content(schema = @Schema(implementation = ResDTO.class)))
     })
-    @GetMapping("/{slackId}")
-    ResponseEntity<ResDTO<MessageGetByIdResDTOV1>> getBy(@PathVariable Long slackId);
+    @GetMapping("/{id}")
+    ResponseEntity<ResDTO<MessageGetByIdResDTOV1>> getBy(@PathVariable Long id);
 
 
     @Operation(summary = "메시지 삭제", description = "사용자의 ID 와 메시지 ID 를 기준으로 메시지를 삭제하는 API 입니다.")
@@ -55,6 +55,6 @@ public interface MessageControllerSwagger {
             @ApiResponse(responseCode = "200", description = "메시지 삭제 성공", content = @Content(schema = @Schema(implementation = ResDTO.class))),
             @ApiResponse(responseCode = "400", description = "메시지 삭제 실패.", content = @Content(schema = @Schema(implementation = ResDTO.class)))
     })
-    @DeleteMapping("/{slackId}")
-    ResponseEntity<ResDTO<Object>> deleteBy(@RequestHeader("X-User-Id") Long userId, @PathVariable Long slackId);
+    @DeleteMapping("/{id}")
+    ResponseEntity<ResDTO<Object>> deleteBy(@RequestHeader("X-User-Id") Long userId, @PathVariable Long id);
 }

@@ -88,8 +88,8 @@ public class MessageControllerV1 implements MessageControllerSwagger {
         );
     }
 
-    @GetMapping("/{slackId}")
-    public ResponseEntity<ResDTO<MessageGetByIdResDTOV1>> getBy(@PathVariable Long slackId) {
+    @GetMapping("/{id}")
+    public ResponseEntity<ResDTO<MessageGetByIdResDTOV1>> getBy(@PathVariable Long id) {
 
         // 더미데이터 ----------------------------------------------
         MessageEntity dummyMessageEntity = MessageEntity.builder()
@@ -111,9 +111,9 @@ public class MessageControllerV1 implements MessageControllerSwagger {
         );
     }
 
-    @DeleteMapping("/{slackId}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<ResDTO<Object>> deleteBy(@RequestHeader("X-User-Id") Long userId,
-                                                   @PathVariable Long slackId) {
+                                                   @PathVariable Long id) {
 
         return new ResponseEntity<>(
                 ResDTO.builder()

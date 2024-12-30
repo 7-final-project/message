@@ -26,13 +26,13 @@ public class MessageGetByIdResDTOV1 {
     @AllArgsConstructor
     public static class Message {
 
-        private Long slackId;
+        private Long id;
         private Long userId;
         private String content;
 
         public static Message from(MessageEntity messageEntity) {
             return Message.builder()
-                    .slackId(messageEntity.getId())
+                    .id(messageEntity.getId())
                     .userId(messageEntity.getUserId())
                     .content(messageEntity.getContent())
                     .build();

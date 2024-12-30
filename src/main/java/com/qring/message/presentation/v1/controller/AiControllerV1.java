@@ -76,8 +76,8 @@ public class AiControllerV1 implements AiControllerSwagger {
         );
     }
 
-    @GetMapping("/{aiId}")
-    public ResponseEntity<ResDTO<AiGetByIdResDTOV1>> getBy(@PathVariable Long aiId) {
+    @GetMapping("/{id}")
+    public ResponseEntity<ResDTO<AiGetByIdResDTOV1>> getBy(@PathVariable Long id) {
 
         // 더미데이터 ----------------------------------------------
         AiEntity dummyAiEntity = AiEntity.builder()
@@ -96,8 +96,8 @@ public class AiControllerV1 implements AiControllerSwagger {
         );
     }
 
-    @DeleteMapping("/{aiId}")
-    public ResponseEntity<ResDTO<Object>> deleteBy(@PathVariable Long aiId) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ResDTO<Object>> deleteBy(@PathVariable Long id) {
 
         return new ResponseEntity<>(
                 ResDTO.builder()

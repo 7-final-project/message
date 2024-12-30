@@ -44,8 +44,8 @@ public interface AiControllerSwagger {
             @ApiResponse(responseCode = "200", description = "AI 조회 성공", content = @Content(schema = @Schema(implementation = ResDTO.class))),
             @ApiResponse(responseCode = "400", description = "AI 조회 실패.", content = @Content(schema = @Schema(implementation = ResDTO.class)))
     })
-    @GetMapping("/{aiId}")
-    ResponseEntity<ResDTO<AiGetByIdResDTOV1>> getBy(@PathVariable Long aiId);
+    @GetMapping("/{id}")
+    ResponseEntity<ResDTO<AiGetByIdResDTOV1>> getBy(@PathVariable Long id);
 
 
     @Operation(summary = "AI 삭제", description = "AI ID 를 기준으로 AI를 삭제하는 API 입니다.")
@@ -53,6 +53,6 @@ public interface AiControllerSwagger {
             @ApiResponse(responseCode = "200", description = "AI 삭제 성공", content = @Content(schema = @Schema(implementation = ResDTO.class))),
             @ApiResponse(responseCode = "400", description = "AI 삭제 실패.", content = @Content(schema = @Schema(implementation = ResDTO.class)))
     })
-    @DeleteMapping("/{aiId}")
-    ResponseEntity<ResDTO<Object>> deleteBy(@PathVariable Long aiId);
+    @DeleteMapping("/{id}")
+    ResponseEntity<ResDTO<Object>> deleteBy(@PathVariable Long id);
 }
