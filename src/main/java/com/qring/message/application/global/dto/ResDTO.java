@@ -1,4 +1,4 @@
-package com.qring.message.application.global;
+package com.qring.message.application.global.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

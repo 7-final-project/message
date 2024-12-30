@@ -1,6 +1,6 @@
 package com.qring.message.presentation.v1.controller;
 
-import com.qring.message.application.global.ResDTO;
+import com.qring.message.application.global.dto.ResDTO;
 import com.qring.message.application.v1.res.MessageGetByIdResDTOV1;
 import com.qring.message.application.v1.res.MessagePostResDTOV1;
 import com.qring.message.application.v1.res.MessageSearchResDTOV1;
@@ -110,6 +110,7 @@ public class MessageControllerV1 implements MessageControllerSwagger {
                 HttpStatus.OK
         );
     }
+
     @DeleteMapping("/{slackId}")
     public ResponseEntity<ResDTO<Object>> deleteBy(@RequestHeader("X-User-Id") Long userId,
                                                    @PathVariable Long slackId) {

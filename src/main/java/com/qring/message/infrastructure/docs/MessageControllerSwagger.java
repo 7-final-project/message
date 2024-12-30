@@ -1,6 +1,6 @@
 package com.qring.message.infrastructure.docs;
 
-import com.qring.message.application.global.ResDTO;
+import com.qring.message.application.global.dto.ResDTO;
 import com.qring.message.application.v1.res.MessageGetByIdResDTOV1;
 import com.qring.message.application.v1.res.MessagePostResDTOV1;
 import com.qring.message.application.v1.res.MessageSearchResDTOV1;
