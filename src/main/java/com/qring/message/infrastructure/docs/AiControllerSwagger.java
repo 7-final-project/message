@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Ai", description = "생성, 조회, 검색, 삭제 관련 AI API")
+@RequestMapping("/v1/ais")
 public interface AiControllerSwagger {
 
     @Operation(summary = "AI 생성", description = "질문 내용을 기준으로 AI 답볍을 생성하는 API 입니다.")

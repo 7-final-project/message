@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Message", description = "생성, 조회, 검색, 삭제 관련 메시지 API")
+@RequestMapping("/v1/messages")
 public interface MessageControllerSwagger {
 
     @Operation(summary = "메시지 생성", description = "사용자의 ID 와 메시지 내용을 기준으로 메시지 생성하는 API 입니다.")
