@@ -1,6 +1,7 @@
 package com.qring.message.presentation.v1.controller;
 
 import com.qring.message.application.global.ResDTO;
+import com.qring.message.application.v1.res.MessageGetByIdResDTOV1;
 import com.qring.message.application.v1.res.MessagePostResDTOV1;
 import com.qring.message.application.v1.res.MessageSearchResDTOV1;
 import com.qring.message.domain.model.MessageEntity;
@@ -81,6 +82,29 @@ public class MessageControllerV1 {
                         .code(HttpStatus.OK.value())
                         .message("메시지 검색에 성공했습니다.")
                         .data(MessageSearchResDTOV1.of(dummyPage))
+                        .build(),
+                HttpStatus.OK
+        );
+    }
+
+    @GetMapping("/{slackId}")
+    public ResponseEntity<ResDTO<MessageGetByIdResDTOV1>> getBy(@PathVariable Long slackId) {
+
+        // 더미데이터 ----------------------------------------------
+        MessageEntity dummyMessageEntity = MessageEntity.builder()
+                .userId(1L)
+                .content("대기 등록이 완료 되었습니다."
+                        + "예약 인원 : 2명"
+                        + "대기 번호 : 30번"
+                        + "내 앞 대기팀 : 2팀")
+                .build();
+        // 추후 삭제 ----------------------------------------------
+
+        return new ResponseEntity<>(
+                ResDTO.<MessageGetByIdResDTOV1>builder()
+                        .code(HttpStatus.OK.value())
+                        .message("메시지 상세 조회에 성공했습니다.")
+                        .data(MessageGetByIdResDTOV1.of(dummyMessageEntity))
                         .build(),
                 HttpStatus.OK
         );
