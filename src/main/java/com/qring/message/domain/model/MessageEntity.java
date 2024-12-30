@@ -41,7 +41,7 @@ public class MessageEntity {
     @Column(name = "created_by", updatable = false)
     private String createdBy;
 
-    @Column(name = "modified_by")
+    @Column(name = "modified_by", nullable = false)
     private String modifiedBy;
 
     @Column(name = "deleted_by")
