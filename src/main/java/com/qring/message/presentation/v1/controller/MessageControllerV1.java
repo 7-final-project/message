@@ -5,6 +5,7 @@ import com.qring.message.application.v1.res.MessageGetByIdResDTOV1;
 import com.qring.message.application.v1.res.MessagePostResDTOV1;
 import com.qring.message.application.v1.res.MessageSearchResDTOV1;
 import com.qring.message.domain.model.MessageEntity;
+import com.qring.message.infrastructure.docs.MessageControllerSwagger;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -18,7 +19,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/v1/messages")
-public class MessageControllerV1 {
+public class MessageControllerV1 implements MessageControllerSwagger {
 
     @PostMapping
     public ResponseEntity<ResDTO<MessagePostResDTOV1>> postBy(@RequestHeader("X-User-Id") Long userId) {
