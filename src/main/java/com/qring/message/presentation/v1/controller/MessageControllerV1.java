@@ -2,10 +2,10 @@ package com.qring.message.presentation.v1.controller;
 
 import com.qring.message.application.global.dto.ResDTO;
 import com.qring.message.application.v1.res.MessageGetByIdResDTOV1;
-import com.qring.message.application.v1.res.MessagePostResDTOV1;
 import com.qring.message.application.v1.res.MessageSearchResDTOV1;
+import com.qring.message.application.v1.service.MessageQueueServiceV1;
 import com.qring.message.domain.model.MessageEntity;
-import com.qring.message.infrastructure.docs.MessageControllerSwagger;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -18,27 +18,21 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/v1/messages")
-public class MessageControllerV1 implements MessageControllerSwagger {
+public class MessageControllerV1 {
 
-    @PostMapping
-    public ResponseEntity<ResDTO<MessagePostResDTOV1>> postBy(@RequestHeader("X-User-Id") Long userId) {
+    private final MessageQueueServiceV1 messageQueueServiceV1;
 
-        // 더미데이터 ----------------------------------------------
-        MessageEntity dummyMessageEntity = MessageEntity.builder()
-                .userId(1L)
-                .content("대기 등록이 완료 되었습니다."
-                        + "예약 인원 : 2명"
-                        + "대기 번호 : 30번"
-                        + "내 앞 대기팀 : 2팀")
-                .build();
-        // 추후 삭제 ----------------------------------------------
+    @PostMapping("/{email}")
+    public ResponseEntity<ResDTO<Object>> postBy(@PathVariable String email) {
+
+        messageQueueServiceV1.sendMessageToUser(email);
 
         return new ResponseEntity<>(
-                ResDTO.<MessagePostResDTOV1>builder()
+                ResDTO.builder()
                         .code(HttpStatus.CREATED.value())
                         .message("메시지 생성에 성공했습니다.")
-                        .data(MessagePostResDTOV1.of(dummyMessageEntity))
                         .build(),
                 HttpStatus.CREATED
         );
