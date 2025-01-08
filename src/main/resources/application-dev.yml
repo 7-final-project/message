@@ -18,6 +18,21 @@ spring:
   config:
     import: classpath:application-key.yml
 
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: ${spring.application.name}-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      properties:
+        spring.json.trusted.packages: '*'
+
+slack:
+  webhook:
+    url: ${SLACK_WEBHOOK_URL}
+  token: ${SLACK_BOT_TOKEN}
+
 eureka:
   client:
     service-url:
@@ -25,3 +40,4 @@ eureka:
 
 server:
   port: 19020
+
