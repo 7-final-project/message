@@ -37,6 +37,16 @@ public class SlackServiceV1 {
         }
     }
 
+    public String extractSlackEmailFromReservationMessage(String message) {
+        try {
+            JsonNode rootNode = objectMapper.readTree(message);
+            return rootNode.get("slackEmail").asText();
+        } catch (Exception e) {
+            log.error("Error parsing message to extract slack email: {}", e.getMessage());
+            throw new IllegalArgumentException("Invalid message format", e);
+        }
+    }
+
     /**
      *
      * SlackEmail에서 SlackId 추출
