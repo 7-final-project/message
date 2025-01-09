@@ -9,49 +9,24 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class MessageQueueServiceV1 {
+public class SlackServiceV1 {
 
     @Value("${slack.token}")
     private String slackBotToken;
-
-    @Value("${slack.webhook.url}")
-    private String slackWebhookUrl;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final RestTemplate restTemplate = new RestTemplate();
 
     /**
-     * 대기 5번째 순번인 고객에게 메시지 전송
-     */
-    @KafkaListener(topics = "userslackemail-send-event-topic", groupId = "${spring.kafka.consumer.group-id}")
-    public void sendMessageToUser(String message) {
-        try {
-            String slackEmail = extractSlackEmailFromMessage(message);
-            String slackId = fetchSlackIdByEmail(slackEmail); // 슬랙 이메일로 Slack ID 조회
-
-            // 메시지 페이로드 생성
-            String payload = createPayload(slackId);
-
-            // 웹훅 URL로 메시지 전송
-            sendRequest(slackWebhookUrl, payload);
-
-            log.info("Message sent successfully to user with email: {}", slackEmail);
-        } catch (Exception e) {
-            log.error("Error occurred while sending message to user: {}", e.getMessage(), e);
-        }
-    }
-
-    /**
      * 메세지에서 slackEmail 추출
      */
-    private String extractSlackEmailFromMessage(String message) {
+    public String extractSlackEmailFromMessage(String message) {
         try {
             // 메시지에서 이메일을 추출 (주어진 형식은 이메일만 있는 값)
             JsonNode rootNode = objectMapper.readTree(message);
@@ -118,25 +93,5 @@ public class MessageQueueServiceV1 {
             log.error("Error occurred while sending GET request: {}", e.getMessage(), e);
             throw new RuntimeException("Error occurred while sending GET request", e);
         }
-    }
-
-    /**
-     * 메시지 페이로드 생성
-     */
-    private String createPayload(String slackId) {
-        // Block Kit을 포함하여 메시지 포맷을 작성
-        return "{\n" +
-                "  \"channel\": \"" + slackId + "\",\n" +
-                "   \"blocks\": [\n" +
-                "    {\n" +
-                "      \"type\": \"section\",\n" +
-                "      \"block_id\": \"section-0\",\n" +
-                "      \"text\": {\n" +
-                "        \"type\": \"mrkdwn\",\n" +
-                "        \"text\": \"고객님의 대기 순번이 5번째로 다가왔습니다! 가게 앞에서 대기해주세요.\"\n" +
-                "      }\n" +
-                "    },\n" +
-                "  ]\n" +
-                "}";
     }
 }
