@@ -66,7 +66,7 @@ public class MessageQueueServiceV1 {
      *
      * SlackEmail에서 SlackId 추출
      */
-    private String fetchSlackIdByEmail(String slackEmail) {
+    public String fetchSlackIdByEmail(String slackEmail) {
         String url = "https://slack.com/api/users.lookupByEmail?email=" + slackEmail;
         String response = sendRequest(url, HttpMethod.GET);
 
@@ -88,7 +88,7 @@ public class MessageQueueServiceV1 {
     /**
      * 웹훅 URL로 POST 요청을 보내는 메서드
      */
-    private void sendRequest(String url, String payload) {
+    public void sendRequest(String url, String payload) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
 
@@ -105,7 +105,7 @@ public class MessageQueueServiceV1 {
     /**
      * GET 요청을 보내는 메서드 (Slack ID 조회용)
      */
-    private String sendRequest(String url, HttpMethod method) {
+    public String sendRequest(String url, HttpMethod method) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Bearer " + slackBotToken);  // 슬랙 봇 토큰 추가
 
