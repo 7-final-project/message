@@ -1,7 +1,5 @@
 package com.qring.message.infrastructure.messaging.kafka;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.qring.message.application.v1.service.SlackServiceV1;
 import com.qring.message.domain.model.MessageEntity;
@@ -91,7 +89,7 @@ public class KafkaMessageConsumerV1 {
                 "■ 매장명: " + dto.getRestaurantName() + "\n" +
                 "■ 매장 전화번호: " + dto.getRestaurantTel() + "\n" +
                 "■ 인원: " + dto.getHeadCount() + "명\n" +
-                "■ 대기순번: " + dto.getWaitingNumber() + "번\n" +
+                "■ 대기순번: " + dto.getSequence() + "번\n" +
                 "원격줄서기, 즉시예약\n스마트외식, 큐링!";
     }
 
@@ -114,7 +112,7 @@ public class KafkaMessageConsumerV1 {
                 "        \"text\": \"■ *매장명*: " + dto.getRestaurantName() + "\\n" +
                 "■ *매장 전화번호*: " + dto.getRestaurantTel() + "\\n" +
                 "■ *인원*: " + dto.getHeadCount() + "명\\n" +
-                "■ *대기순번*: " + dto.getWaitingNumber() + "번\\n" +
+                "■ *대기순번*: " + dto.getSequence() + "번\\n" +
                 "      }\n" +
                 "    },\n" +
                 "    {\n" +
