@@ -3,7 +3,6 @@ package com.qring.message.presentation.v1.controller;
 import com.qring.message.application.global.dto.ResDTO;
 import com.qring.message.application.v1.res.MessageGetByIdResDTOV1;
 import com.qring.message.application.v1.res.MessageSearchResDTOV1;
-import com.qring.message.application.v1.service.MessageQueueServiceV1;
 import com.qring.message.domain.model.MessageEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -22,21 +21,22 @@ import java.util.List;
 @RequestMapping("/v1/messages")
 public class MessageControllerV1 {
 
-    private final MessageQueueServiceV1 messageQueueServiceV1;
-
-    @PostMapping("/{email}")
-    public ResponseEntity<ResDTO<Object>> postBy(@PathVariable String email) {
-
-        messageQueueServiceV1.sendMessageToUser(email);
-
-        return new ResponseEntity<>(
-                ResDTO.builder()
-                        .code(HttpStatus.CREATED.value())
-                        .message("메시지 생성에 성공했습니다.")
-                        .build(),
-                HttpStatus.CREATED
-        );
-    }
+    // 삭제 예정
+//    private final MessageQueueServiceV1 messageQueueServiceV1;
+//
+//    @PostMapping("/{email}")
+//    public ResponseEntity<ResDTO<Object>> postBy(@PathVariable String email) {
+//
+//        messageQueueServiceV1.sendMessageToUser(email);
+//
+//        return new ResponseEntity<>(
+//                ResDTO.builder()
+//                        .code(HttpStatus.CREATED.value())
+//                        .message("메시지 생성에 성공했습니다.")
+//                        .build(),
+//                HttpStatus.CREATED
+//        );
+//    }
 
     @GetMapping
     public ResponseEntity<ResDTO<MessageSearchResDTOV1>> searchBy(@PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
