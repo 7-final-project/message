@@ -1,9 +1,12 @@
 package com.qring.message.infrastructure.messaging.kafka;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.qring.message.application.v1.service.SlackServiceV1;
 import com.qring.message.domain.model.MessageEntity;
+import com.qring.message.domain.repository.MessageRepository;
+import com.qring.message.infrastructure.messaging.dto.ReservationAndQueueEventDTOV1;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,6 +21,7 @@ public class KafkaMessageConsumerV1 {
     @Value("${slack.webhook.url}")
     private String slackWebhookUrl;
 
+    private final MessageRepository messageRepository;
     private final SlackServiceV1 slackServiceV1;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -70,56 +74,70 @@ public class KafkaMessageConsumerV1 {
         String payload = createPayload(slackId, message);
 
         slackServiceV1.sendRequest(slackWebhookUrl, payload);
+
+        ReservationAndQueueEventDTOV1 dto = parseMessage(message);
+
+        MessageEntity messageEntityForSave = MessageEntity.createMessageEntity(
+                dto.getUserId(),
+                createMessageContent(dto)
+        );
+
+        messageRepository.save(messageEntityForSave);
+    }
+
+    private String createMessageContent(ReservationAndQueueEventDTOV1 dto) {
+        return dto.getUsername() + "님께서는 대기 명단에 정상적으로 접수 되셨습니다.\n" +
+                "변동 사항이 발생하신 경우 매장으로 전화주시기 바랍니다.\n" +
+                "■ 매장명: " + dto.getRestaurantName() + "\n" +
+                "■ 매장 전화번호: " + dto.getRestaurantTel() + "\n" +
+                "■ 인원: " + dto.getHeadCount() + "명\n" +
+                "■ 대기순번: " + dto.getWaitingNumber() + "번\n" +
+                "원격줄서기, 즉시예약\n스마트외식, 큐링!";
     }
 
     private String createPayload(String slackId, String message) {
-        try {
-            JsonNode rootNode = objectMapper.readTree(message);
-            // 필요한 데이터 추출
-            String storeName = rootNode.get("restaurantName").asText();
-            String storeTel = rootNode.get("restaurantTel").asText();
-            int peopleCount = rootNode.get("headCount").asInt();
-            int waitingNumber = rootNode.get("waitingNumber").asInt();
-            int teamsAhead = rootNode.get("teamsAhead").asInt();
+        ReservationAndQueueEventDTOV1 dto = parseMessage(message);
+        return "{\n" +
+                "  \"channel\": \"" + slackId + "\",\n" +
+                "  \"blocks\": [\n" +
+                "    {\n" +
+                "      \"type\": \"section\",\n" +
+                "      \"text\": {\n" +
+                "        \"type\": \"mrkdwn\",\n" +
+                "        \"text\": \" "+ dto.getUsername() + "님께서는 대기 명단에 정상적으로 접수 되셨습니다.\\n변동 사항이 발생하신 경우 매장으로 전화주시기 바랍니다.\"\n" +
+                "      }\n" +
+                "    },\n" +
+                "    {\n" +
+                "      \"type\": \"section\",\n" +
+                "      \"text\": {\n" +
+                "        \"type\": \"mrkdwn\",\n" +
+                "        \"text\": \"■ *매장명*: " + dto.getRestaurantName() + "\\n" +
+                "■ *매장 전화번호*: " + dto.getRestaurantTel() + "\\n" +
+                "■ *인원*: " + dto.getHeadCount() + "명\\n" +
+                "■ *대기순번*: " + dto.getWaitingNumber() + "번\\n" +
+                "      }\n" +
+                "    },\n" +
+                "    {\n" +
+                "      \"type\": \"divider\"\n" +
+                "    },\n" +
+                "    {\n" +
+                "      \"type\": \"context\",\n" +
+                "      \"elements\": [\n" +
+                "        {\n" +
+                "          \"type\": \"mrkdwn\",\n" +
+                "          \"text\": \"원격줄서기, 즉시예약\\n스마트외식, 큐링!\"\n" +
+                "        }\n" +
+                "      ]\n" +
+                "    }\n" +
+                "  ]\n" +
+                "}";
+    }
 
-            return "{\n" +
-                    "  \"channel\": \"" + slackId + "\",\n" +
-                    "  \"blocks\": [\n" +
-                    "    {\n" +
-                    "      \"type\": \"section\",\n" +
-                    "      \"text\": {\n" +
-                    "        \"type\": \"mrkdwn\",\n" +
-                    "        \"text\": \"고객님께서는 대기 명단에 정상적으로 접수 되셨습니다.\\n변동 사항이 발생하신 경우 매장으로 전화주시기 바랍니다.\"\n" +
-                    "      }\n" +
-                    "    },\n" +
-                    "    {\n" +
-                    "      \"type\": \"section\",\n" +
-                    "      \"text\": {\n" +
-                    "        \"type\": \"mrkdwn\",\n" +
-                    "        \"text\": \"■ *매장명*: " + storeName + "\\n" +
-                    "■ *매장 전화번호*: " + storeTel + "\\n" +
-                    "■ *인원*: " + peopleCount + "명\\n" +
-                    "■ *대기번호*: " + waitingNumber + "번\\n" +
-                    "■ *내 앞 대기팀*: " + teamsAhead + "팀\"\n" +
-                    "      }\n" +
-                    "    },\n" +
-                    "    {\n" +
-                    "      \"type\": \"divider\"\n" +
-                    "    },\n" +
-                    "    {\n" +
-                    "      \"type\": \"context\",\n" +
-                    "      \"elements\": [\n" +
-                    "        {\n" +
-                    "          \"type\": \"mrkdwn\",\n" +
-                    "          \"text\": \"원격줄서기, 즉시예약\\n스마트외식, 큐링!\"\n" +
-                    "        }\n" +
-                    "      ]\n" +
-                    "    }\n" +
-                    "  ]\n" +
-                    "}";
+    private ReservationAndQueueEventDTOV1 parseMessage(String message) {
+        try {
+            return objectMapper.readValue(message, ReservationAndQueueEventDTOV1.class);
         } catch (Exception e) {
-            log.error("Error parsing message to extract slack email: {}", e.getMessage());
-            throw new IllegalArgumentException("Invalid message format", e);
+            throw new IllegalArgumentException("Invalid message format: " + message, e);
         }
     }
 }
