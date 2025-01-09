@@ -3,6 +3,7 @@ package com.qring.message.infrastructure.messaging.kafka;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.qring.message.application.v1.service.SlackServiceV1;
+import com.qring.message.domain.model.MessageEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

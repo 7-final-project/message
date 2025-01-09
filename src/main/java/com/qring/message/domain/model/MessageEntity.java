@@ -52,4 +52,11 @@ public class MessageEntity {
         this.userId = userId;
         this.content = content;
     }
+
+    public static MessageEntity createMessageEntity(Long userId, String content) {
+        return MessageEntity.builder()
+                .userId(userId)
+                .content(content)
+                .build();
+    }
 }
