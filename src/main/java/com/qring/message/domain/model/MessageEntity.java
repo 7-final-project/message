@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "p_slack")
+@Table(name = "p_message")
 public class MessageEntity {
 
     @Id @Tsid

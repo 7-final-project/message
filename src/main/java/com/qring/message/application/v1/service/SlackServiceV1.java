@@ -2,6 +2,7 @@ package com.qring.message.application.v1.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.qring.message.infrastructure.messaging.dto.ReservationAndQueueEventDTOV1;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,6 +12,9 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -28,7 +32,6 @@ public class SlackServiceV1 {
      */
     public String extractSlackEmailFromMessage(String message) {
         try {
-            // 메시지에서 이메일을 추출 (주어진 형식은 이메일만 있는 값)
             JsonNode rootNode = objectMapper.readTree(message);
             return rootNode.get("slackEmail").asText();  // rootNode 자체가 이메일 값이므로 asText()로 추출
         } catch (Exception e) {
@@ -51,7 +54,7 @@ public class SlackServiceV1 {
      *
      * SlackEmail에서 SlackId 추출
      */
-    public String fetchSlackIdByEmail(String slackEmail) {
+    public String extractSlackIdByEmail(String slackEmail) {
         String url = "https://slack.com/api/users.lookupByEmail?email=" + slackEmail;
         String response = sendRequest(url, HttpMethod.GET);
 
@@ -102,6 +105,68 @@ public class SlackServiceV1 {
         } catch (Exception e) {
             log.error("Error occurred while sending GET request: {}", e.getMessage(), e);
             throw new RuntimeException("Error occurred while sending GET request", e);
+        }
+    }
+
+    public String createMessageContent(ReservationAndQueueEventDTOV1 dto) {
+        return dto.getUsername() + "님께서는 대기 명단에 정상적으로 접수 되셨습니다.\n" +
+                "변동 사항이 발생하신 경우 매장으로 전화주시기 바랍니다.\n" +
+                "■ 매장명: " + dto.getRestaurantName() + "\n" +
+                "■ 매장 전화번호: " + dto.getRestaurantTel() + "\n" +
+                "■ 인원: " + dto.getHeadCount() + "명\n" +
+                "■ 대기순번: " + dto.getSequence() + "번\n";
+    }
+
+    public String createPayload(String slackId, ReservationAndQueueEventDTOV1 dto) throws Exception {
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        Map<String, Object> payload = Map.of(
+                "channel", slackId,
+                "blocks", List.of(
+                        Map.of(
+                                "type", "section",
+                                "text", Map.of(
+                                        "type", "mrkdwn",
+                                        "text", String.format(
+                                                "%s님께서는 대기 명단에 정상적으로 접수 되셨습니다.\n변동 사항이 발생하신 경우 매장으로 전화주시기 바랍니다.",
+                                                dto.getUsername()
+                                        )
+                                )
+                        ),
+                        Map.of(
+                                "type", "section",
+                                "text", Map.of(
+                                        "type", "mrkdwn",
+                                        "text", String.format(
+                                                "■ *매장명*: %s\n■ *매장 전화번호*: %s\n■ *인원*: %d명\n■ *대기순번*: %d번",
+                                                dto.getRestaurantName(),
+                                                dto.getRestaurantTel(),
+                                                dto.getHeadCount(),
+                                                dto.getSequence()
+                                        )
+                                )
+                        ),
+                        Map.of("type", "divider"),
+                        Map.of(
+                                "type", "context",
+                                "elements", List.of(
+                                        Map.of(
+                                                "type", "mrkdwn",
+                                                "text", "원격줄서기, 즉시예약\n스마트외식, 큐링!"
+                                        )
+                                )
+                        )
+                )
+        );
+        return objectMapper.writeValueAsString(payload);
+    }
+
+    public ReservationAndQueueEventDTOV1 parseMessage(String message) {
+        try {
+            return objectMapper.readValue(message, ReservationAndQueueEventDTOV1.class);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Invalid message format: " + message, e);
         }
     }
 }
