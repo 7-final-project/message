@@ -28,6 +28,15 @@ ext {
 }
 
 dependencies {
+    // Slack
+    implementation("com.slack.api:bolt:1.44.2")
+    implementation("com.slack.api:bolt-servlet:1.44.2")
+    implementation("com.slack.api:bolt-jetty:1.44.2")
+    implementation("org.slf4j:slf4j-simple:1.7.36")
+
+    // Kafka
+    implementation 'org.springframework.kafka:spring-kafka'
+
     // swagger
     implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.3.0'
 
