@@ -11,6 +11,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Map;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j(topic = "MessageService - KafkaMessageConsumerV1 Log")
@@ -66,21 +69,25 @@ public class KafkaMessageConsumerV1 {
 
     @KafkaListener(topics = "queue-reservation-event-topic", groupId = "${spring.kafka.consumer.group-id}")
     public void sendReservationMessageToUser(String message) {
-        String slackEmail = slackServiceV1.extractSlackEmailFromReservationMessage(message);
-        String slackId = slackServiceV1.fetchSlackIdByEmail(slackEmail);
+        try {
+            String slackEmail = slackServiceV1.extractSlackEmailFromReservationMessage(message);
+            String slackId = slackServiceV1.fetchSlackIdByEmail(slackEmail);
 
-        String payload = createPayload(slackId, message);
+            ReservationAndQueueEventDTOV1 dto = parseMessage(message);
 
-        slackServiceV1.sendRequest(slackWebhookUrl, payload);
+            String payload = createPayload(slackId, dto);
 
-        ReservationAndQueueEventDTOV1 dto = parseMessage(message);
+            slackServiceV1.sendRequest(slackWebhookUrl, payload);
 
-        MessageEntity messageEntityForSave = MessageEntity.createMessageEntity(
-                dto.getUserId(),
-                createMessageContent(dto)
-        );
+            MessageEntity messageEntityForSave = MessageEntity.createMessageEntity(
+                    dto.getUserId(),
+                    createMessageContent(dto)
+            );
 
-        messageRepository.save(messageEntityForSave);
+            messageRepository.save(messageEntityForSave);
+        } catch (Exception e) {
+            log.error("Failed to process Kafka message: {}", message, e);
+        }
     }
 
     private String createMessageContent(ReservationAndQueueEventDTOV1 dto) {
@@ -89,46 +96,52 @@ public class KafkaMessageConsumerV1 {
                 "■ 매장명: " + dto.getRestaurantName() + "\n" +
                 "■ 매장 전화번호: " + dto.getRestaurantTel() + "\n" +
                 "■ 인원: " + dto.getHeadCount() + "명\n" +
-                "■ 대기순번: " + dto.getSequence() + "번\n" +
-                "원격줄서기, 즉시예약\n스마트외식, 큐링!";
+                "■ 대기순번: " + dto.getSequence() + "번\n";
     }
 
-    private String createPayload(String slackId, String message) {
-        ReservationAndQueueEventDTOV1 dto = parseMessage(message);
-        return "{\n" +
-                "  \"channel\": \"" + slackId + "\",\n" +
-                "  \"blocks\": [\n" +
-                "    {\n" +
-                "      \"type\": \"section\",\n" +
-                "      \"text\": {\n" +
-                "        \"type\": \"mrkdwn\",\n" +
-                "        \"text\": \" "+ dto.getUsername() + "님께서는 대기 명단에 정상적으로 접수 되셨습니다.\\n변동 사항이 발생하신 경우 매장으로 전화주시기 바랍니다.\"\n" +
-                "      }\n" +
-                "    },\n" +
-                "    {\n" +
-                "      \"type\": \"section\",\n" +
-                "      \"text\": {\n" +
-                "        \"type\": \"mrkdwn\",\n" +
-                "        \"text\": \"■ *매장명*: " + dto.getRestaurantName() + "\\n" +
-                "■ *매장 전화번호*: " + dto.getRestaurantTel() + "\\n" +
-                "■ *인원*: " + dto.getHeadCount() + "명\\n" +
-                "■ *대기순번*: " + dto.getSequence() + "번\\n" +
-                "      }\n" +
-                "    },\n" +
-                "    {\n" +
-                "      \"type\": \"divider\"\n" +
-                "    },\n" +
-                "    {\n" +
-                "      \"type\": \"context\",\n" +
-                "      \"elements\": [\n" +
-                "        {\n" +
-                "          \"type\": \"mrkdwn\",\n" +
-                "          \"text\": \"원격줄서기, 즉시예약\\n스마트외식, 큐링!\"\n" +
-                "        }\n" +
-                "      ]\n" +
-                "    }\n" +
-                "  ]\n" +
-                "}";
+    private String createPayload(String slackId, ReservationAndQueueEventDTOV1 dto) throws Exception {
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        Map<String, Object> payload = Map.of(
+                "channel", slackId,
+                "blocks", List.of(
+                        Map.of(
+                                "type", "section",
+                                "text", Map.of(
+                                        "type", "mrkdwn",
+                                        "text", String.format(
+                                                "%s님께서는 대기 명단에 정상적으로 접수 되셨습니다.\n변동 사항이 발생하신 경우 매장으로 전화주시기 바랍니다.",
+                                                dto.getUsername()
+                                        )
+                                )
+                        ),
+                        Map.of(
+                                "type", "section",
+                                "text", Map.of(
+                                        "type", "mrkdwn",
+                                        "text", String.format(
+                                                "■ *매장명*: %s\n■ *매장 전화번호*: %s\n■ *인원*: %d명\n■ *대기순번*: %d번",
+                                                dto.getRestaurantName(),
+                                                dto.getRestaurantTel(),
+                                                dto.getHeadCount(),
+                                                dto.getSequence()
+                                        )
+                                )
+                        ),
+                        Map.of("type", "divider"),
+                        Map.of(
+                                "type", "context",
+                                "elements", List.of(
+                                        Map.of(
+                                                "type", "mrkdwn",
+                                                "text", "원격줄서기, 즉시예약\n스마트외식, 큐링!"
+                                        )
+                                )
+                        )
+                )
+        );
+        return objectMapper.writeValueAsString(payload);
     }
 
     private ReservationAndQueueEventDTOV1 parseMessage(String message) {

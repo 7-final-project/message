@@ -30,7 +30,7 @@ public class SlackServiceV1 {
         try {
             // 메시지에서 이메일을 추출 (주어진 형식은 이메일만 있는 값)
             JsonNode rootNode = objectMapper.readTree(message);
-            return rootNode.asText();  // rootNode 자체가 이메일 값이므로 asText()로 추출
+            return rootNode.get("slackEmail").asText();  // rootNode 자체가 이메일 값이므로 asText()로 추출
         } catch (Exception e) {
             log.error("Error parsing message to extract slack email: {}", e.getMessage());
             throw new IllegalArgumentException("Invalid message format", e);
