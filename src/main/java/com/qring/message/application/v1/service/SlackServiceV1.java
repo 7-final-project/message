@@ -28,7 +28,6 @@ public class SlackServiceV1 {
      */
     public String extractSlackEmailFromMessage(String message) {
         try {
-            // 메시지에서 이메일을 추출 (주어진 형식은 이메일만 있는 값)
             JsonNode rootNode = objectMapper.readTree(message);
             return rootNode.asText();  // rootNode 자체가 이메일 값이므로 asText()로 추출
         } catch (Exception e) {
@@ -51,7 +50,7 @@ public class SlackServiceV1 {
      *
      * SlackEmail에서 SlackId 추출
      */
-    public String fetchSlackIdByEmail(String slackEmail) {
+    public String extractSlackIdByEmail(String slackEmail) {
         String url = "https://slack.com/api/users.lookupByEmail?email=" + slackEmail;
         String response = sendRequest(url, HttpMethod.GET);
 
