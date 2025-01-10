@@ -123,7 +123,7 @@ public class SlackServiceV1 {
                                 "block_id", "section-0",
                                 "text", Map.of(
                                         "type", "mrkdwn",
-                                        "text", String.format("%s 님의 대기 순번이 5번째로 다가왔습니다!\n" +
+                                        "text", String.format("%s님의 대기 순번이 5번째로 다가왔습니다!\n" +
                                                 "\n " +
                                                 "가게 앞에서 대기해주세요.", username)
                                 )
