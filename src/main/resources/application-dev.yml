@@ -28,6 +28,10 @@ spring:
       properties:
         spring.json.trusted.packages: '*'
 
+service:
+  jwt:
+    secret-key: ${JWT_SECRET_KEY}
+
 slack:
   webhook:
     url: ${SLACK_WEBHOOK_URL}
