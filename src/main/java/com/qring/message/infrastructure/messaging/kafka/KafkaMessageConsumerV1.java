@@ -30,22 +30,22 @@ public class KafkaMessageConsumerV1 {
     /**
      * 대기 5번째 순번인 고객에게 메시지 전송
      */
-//    @KafkaListener(topics = "userinfo-send-event-topic", groupId = "${spring.kafka.consumer.group-id}")
-    public void sendMessageToUser(String slackEmail) {
+    @KafkaListener(topics = "userinfo-send-event-topic", groupId = "${spring.kafka.consumer.group-id}")
+    public void sendMessageToUser(String message) {
         try {
-//            JsonNode rootNode = objectMapper.readTree(message);
-//
-//            Long userId = rootNode.get("userId").asLong();
-//            String slackEmail = rootNode.get("slackEmail").asText();
+            JsonNode rootNode = objectMapper.readTree(message);
+
+            Long userId = rootNode.get("userId").asLong();
+            String slackEmail = rootNode.get("slackEmail").asText();
+            String username = rootNode.get("username").asText();
 
             String slackId = slackServiceV1.extractSlackIdByEmail(slackEmail); // 슬랙 이메일로 Slack ID 조회
 
-            String username = "username";
             // 메시지 페이로드 생성
             String content = createPayload(slackId, username);
 
-//            // 메세지 DB에 저장
-//            messageServiceV1.postBy(userId, content);
+            // 메세지 DB에 저장
+            messageServiceV1.postBy(userId, content);
 
             // 웹훅 URL로 메시지 전송
             slackServiceV1.sendRequest(slackWebhookUrl, content);
