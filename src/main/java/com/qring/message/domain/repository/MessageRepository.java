@@ -8,5 +8,5 @@ public interface MessageRepository {
 
     MessageEntity save(MessageEntity messageEntity);
 
-    Page<MessageEntity> findReservationPageByDeletedAtIsNullWithConditions (Pageable pageable, String userRole, Long userId, Long id, String sort);
+    Page<MessageEntity> findReservationPageByDeletedAtIsNullWithConditions (Pageable pageable, String userRole, Long messageUserId, Long userId, Long id, String sort);
 }

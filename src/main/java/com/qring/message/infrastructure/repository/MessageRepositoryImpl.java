@@ -6,6 +6,7 @@ import com.qring.message.domain.model.QMessageEntity;
 import com.qring.message.domain.repository.MessageRepository;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +29,7 @@ public class MessageRepositoryImpl implements MessageRepository {
     }
 
     // QueryDSL 동적 쿼리
-    public Page<MessageEntity> findReservationPageByDeletedAtIsNullWithConditions(Pageable pageable, String userRole, Long userId, Long id, String sort) {
+    public Page<MessageEntity> findReservationPageByDeletedAtIsNullWithConditions(Pageable pageable, String userRole, Long messageUserId, Long userId, Long id, String sort) {
 
         QMessageEntity messageEntity = QMessageEntity.messageEntity;
 
@@ -42,7 +43,7 @@ public class MessageRepositoryImpl implements MessageRepository {
                         roleCondition,
                         messageEntity.deletedAt.isNull(),
                         idEq(id, messageEntity),
-                        userIdEq(userId, messageEntity)
+                        userIdEq(messageUserId, messageEntity)
                 )
                 .orderBy(getOrderSpecifier(sort, messageEntity))
                 .offset(pageable.getOffset())
@@ -56,7 +57,7 @@ public class MessageRepositoryImpl implements MessageRepository {
                         roleCondition,
                         messageEntity.deletedAt.isNull(),
                         idEq(id, messageEntity),
-                        userIdEq(userId, messageEntity)
+                        userIdEq(messageUserId, messageEntity)
                 );
 
         return PageableExecutionUtils.getPage(results, pageable, countQuery::fetchOne);
@@ -68,9 +69,9 @@ public class MessageRepositoryImpl implements MessageRepository {
 
         switch (userRole) {
             case "관리자":
-                return null; // 관리자는 모든 데이터를 조회 가능
+                return Expressions.asBoolean(true).isTrue(); // 관리자는 모든 데이터를 조회 가능
             case "고객":
-                return message.userId.eq(userId); // 고객은 자신의 예약만 조회 가능
+                return message.userId.eq(userId);
             default:
                 throw new BadRequestException("유효하지 않은 역할입니다: " + userRole);
         }
@@ -81,8 +82,8 @@ public class MessageRepositoryImpl implements MessageRepository {
         return id != null ? messageEntity.id.eq(id) : null;
     }
 
-    private BooleanExpression userIdEq(Long userId, QMessageEntity messageEntity) {
-        return userId != null ? messageEntity.userId.eq(userId) : null;
+    private BooleanExpression userIdEq(Long messageUserId, QMessageEntity messageEntity) {
+        return messageUserId != null ? messageEntity.userId.eq(messageUserId) : null;
     }
 
     // 정렬 로직

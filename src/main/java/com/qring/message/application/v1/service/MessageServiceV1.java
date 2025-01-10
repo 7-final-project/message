@@ -25,14 +25,15 @@ public class MessageServiceV1 {
         messageRepository.save(messageEntity);
     }
 
-    public MessageSearchResDTOV1 searchBy(String passport, Pageable pageable, Long userId, Long id, String sort) {
+    public MessageSearchResDTOV1 searchBy(String passport, Pageable pageable, Long massageUserId, Long id, String sort) {
 
         String userRole = validateUserRole(PassportUtil.getRole(passport));
 
         Page<MessageEntity> messageEntityPage = messageRepository.findReservationPageByDeletedAtIsNullWithConditions(
                 pageable,
                 userRole,
-                userId,
+                massageUserId,
+                PassportUtil.getUserId(passport),
                 id,
                 sort
         );
