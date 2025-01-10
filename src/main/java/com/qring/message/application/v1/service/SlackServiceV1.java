@@ -146,8 +146,8 @@ public class SlackServiceV1 {
     }
 
     public String createQueueMessageContent(QueueEventDTOV1 dto) {
-        return dto.getUsername() + "님의 대기 순번이 5번째로 다가왔습니다!\\n" +
-                "\\n" +
+        return dto.getUsername() + "님의 대기 순번이 5번째로 다가왔습니다!\n" +
+                "\n" +
                 " 가게 앞에서 대기해주세요.\n" +
                 "원격줄서기, 즉시예약\n스마트외식, 큐링!";
     }
@@ -206,6 +206,7 @@ public class SlackServiceV1 {
                 "■ 매장명: " + dto.getRestaurantName() + "\n" +
                 "■ 매장 전화번호: " + dto.getRestaurantTel() + "\n" +
                 "■ 인원: " + dto.getHeadCount() + "명\n" +
-                "■ 대기순번: " + dto.getSequence() + "번\n";
+                "■ 대기순번: " + dto.getSequence() + "번\n" +
+                "원격줄서기, 즉시예약\n스마트외식, 큐링!";
     }
 }
