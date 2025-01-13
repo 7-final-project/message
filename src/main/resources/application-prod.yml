@@ -23,7 +23,6 @@ spring:
         format_sql: true
     open-in-view: false
 
-
   kafka:
     bootstrap-servers: kafka:9092
     consumer:
@@ -33,9 +32,9 @@ spring:
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       properties:
         spring.json.trusted.packages: '*'
-
-  config:
-    import: classpath:application-key.yml
+      topic:
+        userinfo-send-event: userinfo-send-event-topic
+        queue-reservation-event: queue-reservation-event-topic
 
 service:
   jwt:

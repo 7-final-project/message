@@ -37,9 +37,6 @@ spring:
         userinfo-send-event: userinfo-send-event-topic
         queue-reservation-event: queue-reservation-event-topic
 
-  config:
-    import: classpath:application-key.yml
-
 service:
   jwt:
     secret-key: ${JWT_SECRET_KEY}
