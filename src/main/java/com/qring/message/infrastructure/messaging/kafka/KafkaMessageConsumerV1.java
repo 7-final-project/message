@@ -29,7 +29,7 @@ public class KafkaMessageConsumerV1 {
     /**
      * 대기 5번째 순번인 고객에게 메시지 전송
      */
-    @KafkaListener(topics = "userinfo-send-event-topic", groupId = "${spring.kafka.consumer.group-id}")
+    @KafkaListener(topics = "${spring.kafka.consumer.topic.userinfo-send-event}", groupId = "${spring.kafka.consumer.group-id}")
     public void sendMessageToUser(String message) {
         try {
             QueueEventDTOV1 dto = slackServiceV1.parseQueueMessage(message);
@@ -51,7 +51,7 @@ public class KafkaMessageConsumerV1 {
         }
     }
 
-    @KafkaListener(topics = "queue-reservation-event-topic", groupId = "${spring.kafka.consumer.group-id}")
+    @KafkaListener(topics = "${spring.kafka.consumer.topic.queue-reservation-event}", groupId = "${spring.kafka.consumer.group-id}")
     public void sendReservationMessageToUser(String message) {
         try {
             ReservationAndQueueEventDTOV1 dto = slackServiceV1.parseMessage(message);
