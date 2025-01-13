@@ -4,7 +4,7 @@ server:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:19000/eureka/
+      defaultZone: http://q-ring:19000/eureka/
 
 spring:
   datasource:
@@ -23,9 +23,8 @@ spring:
         format_sql: true
     open-in-view: false
 
-
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: kafka:9092
     consumer:
       group-id: ${spring.application.name}-group
       auto-offset-reset: earliest
@@ -33,9 +32,9 @@ spring:
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       properties:
         spring.json.trusted.packages: '*'
-
-  config:
-    import: classpath:application-key.yml
+      topic:
+        userinfo-send-event: userinfo-send-event-topic
+        queue-reservation-event: queue-reservation-event-topic
 
 service:
   jwt:
