@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "p_slack")
+@Table(name = "p_message")
 public class MessageEntity {
 
     @Id @Tsid
@@ -48,8 +48,19 @@ public class MessageEntity {
     private String deletedBy;
 
     @Builder
-    public MessageEntity (Long userId, String content) {
+    public MessageEntity (Long userId, String content, String createdBy, String modifiedBy) {
         this.userId = userId;
         this.content = content;
+        this.createdBy = createdBy;
+        this.modifiedBy = modifiedBy;
+    }
+
+    public static MessageEntity createMessageEntity(Long userId, String content) {
+        return MessageEntity.builder()
+                .userId(userId)
+                .content(content)
+                .createdBy("System")
+                .modifiedBy("System")
+                .build();
     }
 }
