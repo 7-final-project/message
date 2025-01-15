@@ -56,13 +56,13 @@ public class KafkaMessageConsumerV1 {
         try {
             ReservationAndQueueEventDTOV1 dto = slackServiceV1.parseMessage(message);
 
-            String slackId = slackServiceV1.extractSlackIdByEmail(dto.getSlackEmail());
+            String slackId = slackServiceV1.extractSlackIdByEmail(dto.getUser().getSlackEmail());
 
             String content = slackServiceV1.createReservationPayload(slackId, dto);
 
             slackServiceV1.sendRequest(slackWebhookUrl, content);
 
-            messageServiceV1.postBy(dto.getUserId(), slackServiceV1.createMessageContent(dto));
+            messageServiceV1.postBy(dto.getUser().getUserId(), slackServiceV1.createMessageContent(dto));
 
         } catch (Exception e) {
             log.error("Failed to process Kafka message: {}", message, e);

@@ -165,7 +165,7 @@ public class SlackServiceV1 {
                                         "type", "mrkdwn",
                                         "text", String.format(
                                                 "%s님께서는 대기 명단에 정상적으로 접수 되셨습니다.\n변동 사항이 발생하신 경우 매장으로 전화주시기 바랍니다.",
-                                                dto.getUsername()
+                                                dto.getUser().getUsername()
                                         )
                                 )
                         ),
@@ -178,10 +178,10 @@ public class SlackServiceV1 {
                                                         "■ *매장 전화번호*: %s\n" +
                                                         "■ *인원*: %d명\n" +
                                                         "■ *대기순번*: %d번",
-                                                dto.getRestaurantName(),
-                                                dto.getRestaurantTel(),
-                                                dto.getHeadCount(),
-                                                dto.getSequence()
+                                                dto.getRestaurant().getRestaurantName(),
+                                                dto.getRestaurant().getRestaurantTel(),
+                                                dto.getReservation().getHeadCount(),
+                                                dto.getQueue().getSequence()
                                         )
                                 )
                         ),
@@ -201,11 +201,11 @@ public class SlackServiceV1 {
     }
 
     public String createMessageContent(ReservationAndQueueEventDTOV1 dto) {
-        return dto.getUsername() + "님께서는 대기 명단에 정상적으로 접수 되셨습니다.\n" +
+        return dto.getUser().getUsername() + "님께서는 대기 명단에 정상적으로 접수 되셨습니다.\n" +
                 "변동 사항이 발생하신 경우 매장으로 전화주시기 바랍니다.\n" +
-                "■ 매장명: " + dto.getRestaurantName() + "\n" +
-                "■ 매장 전화번호: " + dto.getRestaurantTel() + "\n" +
-                "■ 인원: " + dto.getHeadCount() + "명\n" +
-                "■ 대기순번: " + dto.getSequence() + "번\n";
+                "■ 매장명: " + dto.getRestaurant().getRestaurantName() + "\n" +
+                "■ 매장 전화번호: " + dto.getRestaurant().getRestaurantTel() + "\n" +
+                "■ 인원: " + dto.getReservation().getHeadCount() + "명\n" +
+                "■ 대기순번: " + dto.getQueue().getSequence() + "번\n";
     }
 }
