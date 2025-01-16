@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.qring.message.infrastructure.messaging.dto.QueueEventDTOV1;
-import com.qring.message.infrastructure.messaging.dto.ReservationAndQueueEventDTOV1;
+import com.qring.message.infrastructure.messaging.dto.CreateReservationMessageDTOV1;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -87,23 +87,17 @@ public class SlackServiceV1 {
         }
     }
 
-    public QueueEventDTOV1 parseQueueMessage(String message) throws JsonProcessingException {
-        JsonNode rootNode = objectMapper.readTree(message);
-
-        Long userId = rootNode.get("userId").asLong();
-        String slackEmail = rootNode.get("slackEmail").asText();
-        String username = rootNode.get("username").asText();
-
-        return QueueEventDTOV1.from(
-                userId,
-                slackEmail,
-                username
-        );
+    public QueueEventDTOV1 parseQueueMessage(String message) {
+        try {
+            return objectMapper.readValue(message, QueueEventDTOV1.class);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Invalid message format: " + message, e);
+        }
     }
 
-    public ReservationAndQueueEventDTOV1 parseMessage(String message) {
+    public CreateReservationMessageDTOV1 parseMessage(String message) {
         try {
-            return objectMapper.readValue(message, ReservationAndQueueEventDTOV1.class);
+            return objectMapper.readValue(message, CreateReservationMessageDTOV1.class);
         } catch (Exception e) {
             throw new IllegalArgumentException("Invalid message format: " + message, e);
         }
@@ -146,13 +140,13 @@ public class SlackServiceV1 {
     }
 
     public String createQueueMessageContent(QueueEventDTOV1 dto) {
-        return dto.getUsername() + "님의 대기 순번이 5번째로 다가왔습니다!\\n" +
+        return dto.getUser().getUsername() + "님의 대기 순번이 5번째로 다가왔습니다!\\n" +
                 "\\n" +
                 " 가게 앞에서 대기해주세요.\n" +
                 "원격줄서기, 즉시예약\n스마트외식, 큐링!";
     }
 
-    public String createReservationPayload(String slackId, ReservationAndQueueEventDTOV1 dto) throws Exception {
+    public String createReservationPayload(String slackId, CreateReservationMessageDTOV1 dto) throws Exception {
 
         ObjectMapper objectMapper = new ObjectMapper();
 
@@ -165,7 +159,7 @@ public class SlackServiceV1 {
                                         "type", "mrkdwn",
                                         "text", String.format(
                                                 "%s님께서는 대기 명단에 정상적으로 접수 되셨습니다.\n변동 사항이 발생하신 경우 매장으로 전화주시기 바랍니다.",
-                                                dto.getUsername()
+                                                dto.getUser().getUsername()
                                         )
                                 )
                         ),
@@ -178,10 +172,10 @@ public class SlackServiceV1 {
                                                         "■ *매장 전화번호*: %s\n" +
                                                         "■ *인원*: %d명\n" +
                                                         "■ *대기순번*: %d번",
-                                                dto.getRestaurantName(),
-                                                dto.getRestaurantTel(),
-                                                dto.getHeadCount(),
-                                                dto.getSequence()
+                                                dto.getReservation().getRestaurant().getName(),
+                                                dto.getReservation().getRestaurant().getTel(),
+                                                dto.getReservation().getHeadCount(),
+                                                dto.getQueue().getSequence()
                                         )
                                 )
                         ),
@@ -200,12 +194,14 @@ public class SlackServiceV1 {
         return objectMapper.writeValueAsString(payload);
     }
 
-    public String createMessageContent(ReservationAndQueueEventDTOV1 dto) {
-        return dto.getUsername() + "님께서는 대기 명단에 정상적으로 접수 되셨습니다.\n" +
+    public String createMessageContent(CreateReservationMessageDTOV1 dto) {
+        return dto.getUser().getUsername() + "님께서는 대기 명단에 정상적으로 접수 되셨습니다.\n" +
                 "변동 사항이 발생하신 경우 매장으로 전화주시기 바랍니다.\n" +
-                "■ 매장명: " + dto.getRestaurantName() + "\n" +
-                "■ 매장 전화번호: " + dto.getRestaurantTel() + "\n" +
-                "■ 인원: " + dto.getHeadCount() + "명\n" +
-                "■ 대기순번: " + dto.getSequence() + "번\n";
+                "■ 매장명: " + dto.getReservation().getRestaurant().getName() + "\n" +
+                "■ 매장 전화번호: " + dto.getReservation().getRestaurant().getTel() + "\n" +
+                "■ 인원: " + dto.getReservation().getHeadCount() + "명\n" +
+                "■ 대기순번: " + dto.getQueue().getSequence() + "번\n" +
+                " 가게 앞에서 대기해주세요.\n" +
+                "원격줄서기, 즉시예약\n스마트외식, 큐링!";
     }
 }
