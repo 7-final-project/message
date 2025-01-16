@@ -29,18 +29,18 @@ public class KafkaMessageConsumerV1 {
         try {
             QueueEventDTOV1 dto = slackServiceV1.parseQueueMessage(message);
 
-            String slackId = slackServiceV1.extractSlackIdByEmail(dto.getSlackEmail()); // 슬랙 이메일로 Slack ID 조회
+            String slackId = slackServiceV1.extractSlackIdByEmail(dto.getUser().getSlackEmail()); // 슬랙 이메일로 Slack ID 조회
 
             // 메시지 페이로드 생성
-            String content = slackServiceV1.createQueuePayload(slackId, dto.getUsername());
+            String content = slackServiceV1.createQueuePayload(slackId, dto.getUser().getUsername());
 
             // 웹훅 URL로 메시지 전송
             slackServiceV1.sendRequest(slackWebhookUrl, content);
 
             // 메세지 DB에 저장
-            messageServiceV1.postBy(dto.getUserId(), slackServiceV1.createQueueMessageContent(dto));
+            messageServiceV1.postBy(dto.getUser().getId(), slackServiceV1.createQueueMessageContent(dto));
 
-            log.info("Message sent successfully to user with email: {}", dto.getSlackEmail());
+            log.info("Message sent successfully to user with email: {}", dto.getUser().getSlackEmail());
         } catch (Exception e) {
             log.error("Error occurred while sending message to user: {}", e.getMessage(), e);
         }
