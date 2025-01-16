@@ -1,19 +1,14 @@
 package com.qring.message.infrastructure.messaging.kafka;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.qring.message.application.v1.service.MessageServiceV1;
 import com.qring.message.application.v1.service.SlackServiceV1;
 import com.qring.message.infrastructure.messaging.dto.QueueEventDTOV1;
-import com.qring.message.infrastructure.messaging.dto.ReservationAndQueueEventDTOV1;
+import com.qring.message.infrastructure.messaging.dto.CreateReservationMessageDTOV1;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -54,7 +49,7 @@ public class KafkaMessageConsumerV1 {
     @KafkaListener(topics = "${spring.kafka.consumer.topic.queue-reservation-event}", groupId = "${spring.kafka.consumer.group-id}")
     public void sendReservationMessageToUser(String message) {
         try {
-            ReservationAndQueueEventDTOV1 dto = slackServiceV1.parseMessage(message);
+            CreateReservationMessageDTOV1 dto = slackServiceV1.parseMessage(message);
 
             String slackId = slackServiceV1.extractSlackIdByEmail(dto.getUser().getSlackEmail());
 

@@ -9,10 +9,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ReservationAndQueueEventDTOV1 {
+public class CreateReservationMessageDTOV1 {
 
     private User user;
-    private Restaurant restaurant;
     private Reservation reservation;
     private Queue queue;
 
@@ -39,35 +38,37 @@ public class ReservationAndQueueEventDTOV1 {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class Restaurant {
-
-        private String restaurantName;
-        private String restaurantTel;
-
-        public static Restaurant from(String restaurantName, String restaurantTel) {
-            return Restaurant.builder()
-                    .restaurantName(restaurantName)
-                    .restaurantTel(restaurantTel)
-                    .build();
-        }
-    }
-
-    @Getter
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
     public static class Reservation {
 
         private Long id;
-        private Long restaurantId;
         private int headCount;
+        private Restaurant restaurant;
 
-        public static Reservation from(Long id, Long restaurantId, int headCount) {
+        public static Reservation from(Long id, int headCount, Restaurant restaurant) {
             return Reservation.builder()
                     .id(id)
-                    .restaurantId(restaurantId)
                     .headCount(headCount)
+                    .restaurant(restaurant)
                     .build();
+        }
+
+        @Getter
+        @Builder
+        @NoArgsConstructor
+        @AllArgsConstructor
+        public static class Restaurant {
+
+            private Long id;
+            private String name;
+            private String tel;
+
+            public static Restaurant from(Long id, String restaurantName, String restaurantTel) {
+                return Restaurant.builder()
+                        .id(id)
+                        .name(restaurantName)
+                        .tel(restaurantTel)
+                        .build();
+            }
         }
     }
 
