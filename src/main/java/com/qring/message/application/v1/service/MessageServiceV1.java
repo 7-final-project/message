@@ -1,6 +1,7 @@
 package com.qring.message.application.v1.service;
 
-import com.qring.message.application.global.exception.UnauthorizedAccessException;
+import com.qring.message.application.global.exception.ErrorCode;
+import com.qring.message.application.global.exception.MessageException;
 import com.qring.message.application.v1.res.MessageSearchResDTOV1;
 import com.qring.message.domain.model.MessageEntity;
 import com.qring.message.domain.repository.MessageRepository;
@@ -46,7 +47,7 @@ public class MessageServiceV1 {
         if ("관리자".equals(role) || "고객".equals(role)) {
             return role;
         } else {
-            throw new UnauthorizedAccessException("유효하지 않은 사용자 역할입니다.");
+            throw new MessageException(ErrorCode.AUTHORITY_ERROR, "유효하지 않은 사용자 역할입니다.");
         }
     }
 }

@@ -1,10 +1,11 @@
 package com.qring.message.application.v1.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.qring.message.infrastructure.messaging.dto.QueueEventDTOV1;
+import com.qring.message.application.global.exception.ErrorCode;
+import com.qring.message.application.global.exception.MessageException;
 import com.qring.message.infrastructure.messaging.dto.CreateReservationMessageDTOV1;
+import com.qring.message.infrastructure.messaging.dto.QueueEventDTOV1;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,10 +30,7 @@ public class SlackServiceV1 {
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final RestTemplate restTemplate = new RestTemplate();
 
-    /**
-     *
-     * SlackEmail에서 SlackId 추출
-     */
+    // NOTE: SlackEmail에서 SlackId 추출
     public String extractSlackIdByEmail(String slackEmail) {
         String url = "https://slack.com/api/users.lookupByEmail?email=" + slackEmail;
         String response = sendRequest(url, HttpMethod.GET);
@@ -44,17 +42,15 @@ public class SlackServiceV1 {
                 return responseBody.get("user").get("id").asText();
             } else {
                 String error = responseBody.get("error").asText();
-                throw new RuntimeException("Failed to fetch Slack ID: " + error);
+                throw new MessageException(ErrorCode.BAD_REQUEST_ERROR, "SlackID 추출 실패: " + error);
             }
         } catch (Exception e) {
-            throw new IllegalArgumentException("Error parsing response for fetchSlackIdByEmail: " + e.getMessage(), e);
+            throw new MessageException(ErrorCode.BAD_REQUEST_ERROR, "SlackEmail 추출 실패: " + e.getMessage());
         }
     }
 
 
-    /**
-     * 웹훅 URL로 POST 요청을 보내는 메서드
-     */
+    // NOTE: 웹훅 URL로 POST 요청을 보내는 메서드
     public void sendRequest(String url, String payload) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
@@ -63,15 +59,15 @@ public class SlackServiceV1 {
 
         try {
             ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class);
-            log.info("Slack response: {}", response.getBody());
+            log.info("Slack 응답 객체: {}", response.getBody());
         } catch (Exception e) {
-            log.error("Error occurred while sending request to Slack: {}", e.getMessage(), e);
+            log.error("메세지 요청 실패: {}", e.getMessage(), e);
+            throw new MessageException(ErrorCode.BAD_REQUEST_ERROR, "메세지 요청 실패");
         }
     }
 
-    /**
-     * GET 요청을 보내는 메서드 (Slack ID 조회용)
-     */
+
+    // NOTE: GET 요청을 보내는 메서드 (Slack ID 조회용)
     public String sendRequest(String url, HttpMethod method) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Bearer " + slackBotToken);  // 슬랙 봇 토큰 추가
@@ -82,8 +78,8 @@ public class SlackServiceV1 {
             ResponseEntity<String> response = restTemplate.exchange(url, method, requestEntity, String.class);
             return response.getBody();  // 응답 본문 반환
         } catch (Exception e) {
-            log.error("Error occurred while sending GET request: {}", e.getMessage(), e);
-            throw new RuntimeException("Error occurred while sending GET request", e);
+            log.error("메세지 가져오기 실패: {}", e.getMessage(), e);
+            throw new MessageException(ErrorCode.BAD_REQUEST_ERROR, "메세지 가져오기 실패");
         }
     }
 
@@ -91,7 +87,7 @@ public class SlackServiceV1 {
         try {
             return objectMapper.readValue(message, QueueEventDTOV1.class);
         } catch (Exception e) {
-            throw new IllegalArgumentException("Invalid message format: " + message, e);
+            throw new MessageException(ErrorCode.BAD_REQUEST_ERROR, "유효하지 않은 메세지 형식: " + message);
         }
     }
 
@@ -99,13 +95,13 @@ public class SlackServiceV1 {
         try {
             return objectMapper.readValue(message, CreateReservationMessageDTOV1.class);
         } catch (Exception e) {
-            throw new IllegalArgumentException("Invalid message format: " + message, e);
+            throw new MessageException(ErrorCode.BAD_REQUEST_ERROR, "유효하지 않은 메세지 형식: " + message);
         }
     }
 
-    /**
-     * 메시지 페이로드 및 컨텐츠 생성
-     */
+
+    // NOTE: 메시지 페이로드 및 컨텐츠 생성
+    // NOTE: 대기 순번 알림 발송
     public String createQueuePayload(String slackId, String username) throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
 
@@ -146,6 +142,7 @@ public class SlackServiceV1 {
                 "원격줄서기, 즉시예약\n스마트외식, 큐링!";
     }
 
+    // NOTE: 예약 완료 알림 발송
     public String createReservationPayload(String slackId, CreateReservationMessageDTOV1 dto) throws Exception {
 
         ObjectMapper objectMapper = new ObjectMapper();
