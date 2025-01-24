@@ -1,9 +1,11 @@
 package com.qring.message.infrastructure.messaging.kafka;
 
+import com.qring.message.application.global.exception.ErrorCode;
+import com.qring.message.application.global.exception.MessageException;
 import com.qring.message.application.service.MessageServiceV1;
 import com.qring.message.application.service.SlackServiceV1;
-import com.qring.message.infrastructure.messaging.dto.QueueEventDTOV1;
 import com.qring.message.infrastructure.messaging.dto.CreateReservationMessageDTOV1;
+import com.qring.message.infrastructure.messaging.dto.QueueEventDTOV1;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

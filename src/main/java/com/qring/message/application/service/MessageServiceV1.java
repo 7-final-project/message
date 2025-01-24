@@ -2,7 +2,6 @@ package com.qring.message.application.service;
 
 import com.qring.message.application.global.exception.ErrorCode;
 import com.qring.message.application.global.exception.MessageException;
-import com.qring.message.application.global.exception.UnauthorizedAccessException;
 import com.qring.message.application.res.MessageSearchResDTOV1;
 import com.qring.message.domain.model.MessageEntity;
 import com.qring.message.domain.repository.MessageRepository;
