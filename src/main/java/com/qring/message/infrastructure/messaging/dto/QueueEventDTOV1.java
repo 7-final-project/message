@@ -11,15 +11,24 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class QueueEventDTOV1 {
 
-    private Long userId;
-    private String slackEmail;
-    private String username;
+    private User user;
 
-    public static QueueEventDTOV1 from(Long userId, String slackEmail, String username) {
-        return QueueEventDTOV1.builder()
-                .userId(userId)
-                .slackEmail(slackEmail)
-                .username(username)
-                .build();
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class User {
+
+        private Long id;
+        private String username;
+        private String slackEmail;
+
+        public static User from(Long id, String username, String slackEmail) {
+            return User.builder()
+                    .id(id)
+                    .username(username)
+                    .slackEmail(slackEmail)
+                    .build();
+        }
     }
 }
