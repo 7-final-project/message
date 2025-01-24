@@ -1,9 +1,7 @@
 package com.qring.message.infrastructure.messaging.kafka;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.qring.message.application.v1.service.MessageServiceV1;
-import com.qring.message.application.v1.service.SlackServiceV1;
+import com.qring.message.application.service.MessageServiceV1;
+import com.qring.message.application.service.SlackServiceV1;
 import com.qring.message.infrastructure.messaging.dto.QueueEventDTOV1;
 import com.qring.message.infrastructure.messaging.dto.ReservationAndQueueEventDTOV1;
 import lombok.RequiredArgsConstructor;
@@ -12,12 +10,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Map;
-
 @Service
 @RequiredArgsConstructor
-@Slf4j(topic = "MessageService - KafkaMessageConsumerV1 Log")
+@Slf4j(topic = "KafkaMessageConsumerV1")
 public class KafkaMessageConsumerV1 {
 
     @Value("${slack.webhook.url}")
