@@ -1,7 +1,7 @@
 package com.qring.message.infrastructure.docs;
 
 import com.qring.message.application.global.dto.ResDTO;
-import com.qring.message.application.v1.res.MessageSearchResDTOV1;
+import com.qring.message.application.res.MessageSearchResDTOV1;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;

@@ -1,4 +1,4 @@
-package com.qring.message.application.v1.res;
+package com.qring.message.application.res;
 
 import com.qring.message.domain.model.MessageEntity;
 import lombok.AllArgsConstructor;

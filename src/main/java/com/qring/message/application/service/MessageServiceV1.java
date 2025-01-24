@@ -1,7 +1,7 @@
-package com.qring.message.application.v1.service;
+package com.qring.message.application.service;
 
 import com.qring.message.application.global.exception.UnauthorizedAccessException;
-import com.qring.message.application.v1.res.MessageSearchResDTOV1;
+import com.qring.message.application.res.MessageSearchResDTOV1;
 import com.qring.message.domain.model.MessageEntity;
 import com.qring.message.domain.repository.MessageRepository;
 import com.qring.message.infrastructure.util.PassportUtil;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j(topic = "MessageServiceV1 Log")
+@Slf4j(topic = "MessageServiceV1")
 public class MessageServiceV1 {
 
     private final MessageRepository messageRepository;
