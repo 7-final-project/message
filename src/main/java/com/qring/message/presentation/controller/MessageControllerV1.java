@@ -1,8 +1,8 @@
-package com.qring.message.presentation.v1.controller;
+package com.qring.message.presentation.controller;
 
 import com.qring.message.application.global.dto.ResDTO;
-import com.qring.message.application.v1.res.MessageSearchResDTOV1;
-import com.qring.message.application.v1.service.MessageServiceV1;
+import com.qring.message.application.res.MessageSearchResDTOV1;
+import com.qring.message.application.service.MessageServiceV1;
 import com.qring.message.infrastructure.docs.MessageControllerSwagger;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;

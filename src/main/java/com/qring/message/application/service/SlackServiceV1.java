@@ -1,4 +1,4 @@
-package com.qring.message.application.v1.service;
+package com.qring.message.application.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
